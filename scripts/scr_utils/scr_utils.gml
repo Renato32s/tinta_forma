@@ -7,8 +7,10 @@ global.debug = false; //variável de debug
 #region macros
 
 #macro DEBUG_MODE false //macro de debug
-#macro modo_normal:DEBUG_MODE false //modo normal sem função de debug
 #macro modo_debug:DEBUG_MODE true //modo de debug
+#macro modo_normal:DEBUG_MODE false //modo normal sem função de debug
+#macro FPS game_get_speed(gamespeed_fps) //pegando o fps do game
+
 
 #endregion
 

@@ -34,6 +34,8 @@ inputs = function()
 //metodo para aplicar a gravidade
 aplica_velocidade = function()
 {
+	vel_h = (right - left) * max_vel_h; //vel_h recebe o tesultado de direita(positivo) - esquerda(negativo) e multiplical po max_vel_h = 2;
+	
 	if (!chao) //se não está no chão
 	{
 		vel_v += grav; //aplica a gravidade
@@ -54,7 +56,6 @@ aplica_velocidade = function()
 //metodo de movimentação
 movimento = function()
 {	
-	vel_h = (right - left) * max_vel_h; //vel_h recebe o tesultado de direita(positivo) - esquerda(negativo) e multiplical po max_vel_h = 2;
 	move_and_collide(vel_h, vel_v, obj_parede, 4); //usando move and collide horizontal
 	move_and_collide(0, vel_v, obj_parede, 12); //usando move and collide vertical
 	
@@ -80,7 +81,18 @@ swap_sprite = function(_sprite = spr_parede)
 	}
 }
 
+//metodo para checar se a animação da sprite acabou
+animacao_acabou = function() 
+{
+	//variável de velocidade da sprite
+	var _spd = sprite_get_speed(sprite_index) / FPS;
+	if (image_index + _spd >= image_number)
+	{
+		return true;
+	}
+}
 
+#endregion fim da região
 
 #region máquina de estados
 
@@ -89,20 +101,9 @@ estado_parado = function() //está parado
 	swap_sprite(spr_player_idle); //definindo a sprite
 	vel_h = 0;
 	
-	if (right != left) 
-	{
-		estado = estado_movendo; //se movendo, para esquerda ou direita
-	}
-	
-	if (jump) 
-	{
-		estado = estado_pulo; //pulando
-	}
-	
-	if (!chao) 
-	{
-		estado = estado_pulo; //se não está no chão, está caindo
-	}
+	if (right != left) estado = estado_movendo; //se movendo, para esquerda ou direita
+	if (jump) estado = estado_pulo; //pulando
+	if (!chao) estado = estado_pulo; //se não está no chão, está caindo
 }
 
 estado_movendo = function() //se movendo
@@ -129,6 +130,39 @@ estado_pulo = function() //pulando
 		estado = estado_parado; //se está no chão, o estado base é o parado
 	}
 }
+
+estado_power_up_inicio = function() //power_up inicio
+{
+	swap_sprite(spr_player_power_up_inicio); //definindo a sprite
+	
+	if (animacao_acabou()) //se acabou a animação
+	{
+		estado = estado_power_up_meio; //muda estado
+	}
+}
+
+estado_power_up_meio = function() //power_up meio
+{
+	swap_sprite(spr_player_power_up_meio); //definindo a sprite
+	
+	if (animacao_acabou())
+	{
+		estado = estado_power_up_final;
+	}
+}
+
+estado_power_up_final = function() //power_up final
+{
+	swap_sprite(spr_player_power_up_final); //definindo a sprite
+	
+	if (animacao_acabou())
+	{
+		estado = estado_parado;
+	}
+}
+
+
+#endregion fim da região, máquina de estados
 
 #region debug
 
@@ -177,4 +211,5 @@ enabler_debug = function()
 
 #endregion
 
-estado = estado_parado; //passando para a variável de estado, os estados do player
+//final do script
+estado = estado_power_up_inicio; //passando para a variável de estado, os estados do player
