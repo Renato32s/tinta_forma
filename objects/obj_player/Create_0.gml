@@ -5,7 +5,7 @@
 vel_h		= 0;
 vel_v		= 0;
 max_vel_h	= 1;
-max_vel_v	= 4;
+max_vel_v	= 3;
 grav		= 0.2;
 
 //variável do chão
@@ -16,6 +16,9 @@ right	= false;
 left	= false;
 jump	= false;
 
+//variável do estado
+estado = noone;
+
 #endregion
 
 #region métodos
@@ -25,16 +28,12 @@ inputs = function()
 {
 	left	= keyboard_check(ord("A")); //pegando o input da esquerda
 	right	= keyboard_check(ord("D")); //pegando o input da direita
-	jump	= keyboard_check_pressed(vk_space); //pegando o input do pulo
+	jump	= keyboard_check(vk_space); //pegando o input do pulo
 }
 
-//metodo de movimentação
-control_player = function()
-{	
-	inputs(); //chamando o metodo de inputs
-	
-	checa_chao();
-	
+//metodo para aplicar a gravidade
+aplica_velocidade = function()
+{
 	if (!chao) //se não está no chão
 	{
 		vel_v += grav; //aplica a gravidade
@@ -42,24 +41,140 @@ control_player = function()
 	else //se está no chão
 	{
 		vel_v = 0; //zerando a vel_v
+		y = round(y); //arredondando o valor do eixo_y( vertical )
+		
 		if (jump) //se pressionar tecla de pulo
 		{
 			vel_v = -max_vel_v; //vel_v recebe o valor negativo de max_vel_v, faz o player pular
 		}
 	}
 	
-	show_debug_message(vel_v);
-	
-	vel_h = (right - left) * max_vel_h; //vel_h recebe o tesultado de direita(positivo) - esquerda(negativo) e multiplical po max_vel_h = 2;
-	move_and_collide(vel_h, 0, obj_parede, 4); //usando move and collide horizontal
-	move_and_collide(0, vel_v, obj_parede, 12); //usando move and collide vertical
 }
 
-//metodo para checar se estou no chão
+//metodo de movimentação
+movimento = function()
+{	
+	vel_h = (right - left) * max_vel_h; //vel_h recebe o tesultado de direita(positivo) - esquerda(negativo) e multiplical po max_vel_h = 2;
+	move_and_collide(vel_h, vel_v, obj_parede, 4); //usando move and collide horizontal
+	move_and_collide(0, vel_v, obj_parede, 12); //usando move and collide vertical
+	
+	//enabler_debug(); //chamando o metodo de ativar ou desativar o debug
+	//checa_chao(); //chamando o metodo que checa se está no chão
+	//inputs(); //chamando o metodo de inputs	
+	//estado(); //máquina de estado
+}
+
+//metodo para checar se está no chão
 checa_chao = function()
 {
-	chao = place_meeting(x, y + 1, obj_parede); //checando se estou no chão
-	show_debug_message(chao);
+	chao = place_meeting(x, y + 1, obj_parede); //checando se está no chão
 }
 
+//metodo para trocar de sprite
+swap_sprite = function(_sprite = spr_parede)
+{
+	if (sprite_index != _sprite) //se a sprite for diferente da sprite atual
+	{
+		sprite_index	= _sprite; //define a sprite atual
+		image_index		= 0; //zerando o index da sprite, faz ela começãr do zero
+	}
+}
+
+
+
+#region máquina de estados
+
+estado_parado = function() //está parado
+{
+	swap_sprite(spr_player_idle); //definindo a sprite
+	vel_h = 0;
+	
+	if (right != left) 
+	{
+		estado = estado_movendo; //se movendo, para esquerda ou direita
+	}
+	
+	if (jump) 
+	{
+		estado = estado_pulo; //pulando
+	}
+	
+	if (!chao) 
+	{
+		estado = estado_pulo; //se não está no chão, está caindo
+	}
+}
+
+estado_movendo = function() //se movendo
+{
+	aplica_velocidade();
+	swap_sprite(spr_player_movendo); //definindo a sprite
+	if (vel_h < 0) image_xscale = -1; //se o vel_h for menor que zero, a escala é negativa
+	else if (vel_h > 0) image_xscale = 1; //se o vel_h for maior que zero, escala_x é positiva
+	
+	if (vel_h == 0) 
+	{
+		estado = estado_parado; //se vel_h for zero, volta para o estado de parado
+	}
+}
+
+estado_pulo = function() //pulando
+{
+	aplica_velocidade();
+	if (vel_v < 0) swap_sprite(spr_player_pulo_cima); //definindo a sprite
+	else if (vel_v > 0) swap_sprite(spr_player_pulo_baixo); //caindo
+	
+	if (chao) 
+	{
+		estado = estado_parado; //se está no chão, o estado base é o parado
+	}
+}
+
+#region debug
+
+//variável de view do debug
+view_player = noone;
+
+//metodo de debug
+debug_on_screen = function()
+{	
+	show_debug_overlay(global.debug); //mostrando o debug overlay
+	
+	view_player = dbg_view("view_player", 1, 60, 85, 300, 200); //criando o debug overlay
+	dbg_watch(ref_create(self, "vel_v"), "força_do_pulo"); //verificando a variável vel_v
+	dbg_watch(ref_create(self, "chao"), "no_chão"); //verificando a variável chao
+	dbg_slider(ref_create(self, "max_vel_v"), 0, 8, "forçs_máx_pulo", .1); //slider da velocidade máxima
+	dbg_slider(ref_create(self, "grav"), 0, 1, "força_gravidade", .01); //slider da gravidade
+
+}
+
+//metodo para ativar ou desativar p debug
+enabler_debug = function()
+{
+	if (!DEBUG_MODE) return; //se não está no modo debug, não faz nada
+	
+	var _debug = keyboard_check_pressed(vk_tab); //se pressionar o tab
+	if (_debug) 
+	{
+		global.debug = !global.debug; //se pressionar a tecla para ativar o debug
+		
+		if (global.debug) //se global.debug for true
+		{
+			debug_on_screen(); //mostrando o debug
+		}
+		else
+		{
+			if (dbg_view_exists(view_player)) //se view existe e global.debug for false
+			{
+				show_debug_overlay(0);
+				dbg_view_delete(view_player); //deletando a view_player
+			}
+		}
+	}
+}
+
+
+
 #endregion
+
+estado = estado_parado; //passando para a variável de estado, os estados do player

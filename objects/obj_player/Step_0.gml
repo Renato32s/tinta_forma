@@ -1,3 +1,7 @@
 /// @description controlando o objeto
 
-control_player(); //metodo de movimentação
+inputs(); //metodo de inputs
+checa_chao(); //checando se está no chão
+movimento(); //controlando o player
+
+estado(); //máquina de estado
