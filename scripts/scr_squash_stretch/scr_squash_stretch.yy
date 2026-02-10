@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_squash_stretch",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_squash_stretch",
+  "parent":{
+    "name":"scripts",
+    "path":"folders/efects/scripts.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

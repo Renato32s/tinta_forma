@@ -1,4 +1,6 @@
 /// @description iniciando o objeto
+//iniciando funções
+inicia_efeito_squash();
 
 #region variáveis
 //variáveis de movimento
@@ -11,10 +13,14 @@ grav		= 0.2;
 //variável do chão
 chao	= false;
 
+//variável de controle da direção que o player está olhando
+direction_flip = 1;
+
 //variáveis de inputs
-right	= false;
-left	= false;
-jump	= false;
+right		= false;
+left		= false;
+jump		= false;
+power_tinta = false;
 
 //variável do estado
 estado = noone;
@@ -26,14 +32,17 @@ estado = noone;
 //metodo de inputs
 inputs = function()
 {
-	left	= keyboard_check(ord("A")); //pegando o input da esquerda
-	right	= keyboard_check(ord("D")); //pegando o input da direita
-	jump	= keyboard_check(vk_space); //pegando o input do pulo
+	left		= keyboard_check(ord("A")); //pegando o input da esquerda
+	right		= keyboard_check(ord("D")); //pegando o input da direita
+	jump		= keyboard_check_pressed(vk_space); //pegando o input do pulo
+	power_tinta	= keyboard_check_pressed(vk_shift); //pegando o input do poder da tinta
 }
 
 //metodo para aplicar a gravidade
 aplica_velocidade = function()
 {
+	checa_chao(); //checando se está no chão
+	
 	vel_h = (right - left) * max_vel_h; //vel_h recebe o tesultado de direita(positivo) - esquerda(negativo) e multiplical po max_vel_h = 2;
 	
 	if (!chao) //se não está no chão
@@ -92,17 +101,34 @@ animacao_acabou = function()
 	}
 }
 
+//metodo para ajustar a escala
+ajusta_escala = function()
+{
+	if (vel_h != 0) direction_flip = sign(vel_h); //se o vel_h for diferente de zero, a escala é definida com base no vel_h
+}
+
 #endregion fim da região
 
 #region máquina de estados
 
 estado_parado = function() //está parado
 {
-	swap_sprite(spr_player_idle); //definindo a sprite
 	vel_h = 0;
+	vel_v = 0;
+	aplica_velocidade();
+	
+	
+	swap_sprite(spr_player_idle); //definindo a sprite
+	
+	if (power_tinta) estado = estado_tinta_entrar; //entrando no modo tinta
 	
 	if (right != left) estado = estado_movendo; //se movendo, para esquerda ou direita
-	if (jump) estado = estado_pulo; //pulando
+	if (jump) 
+	{
+		estado = estado_pulo; //pulando
+		cria_particulas(x, y, depth -1, obj_pulo_particula); //criando a particula do pulo
+		efeito_squash(.4, 1.6); //esticando e achatando
+	}
 	if (!chao) estado = estado_pulo; //se não está no chão, está caindo
 }
 
@@ -110,12 +136,17 @@ estado_movendo = function() //se movendo
 {
 	aplica_velocidade();
 	swap_sprite(spr_player_movendo); //definindo a sprite
-	if (vel_h < 0) image_xscale = -1; //se o vel_h for menor que zero, a escala é negativa
-	else if (vel_h > 0) image_xscale = 1; //se o vel_h for maior que zero, escala_x é positiva
 	
 	if (vel_h == 0) 
 	{
 		estado = estado_parado; //se vel_h for zero, volta para o estado de parado
+	}
+	
+	if (jump)
+	{
+		estado = estado_pulo;
+		cria_particulas(x, y, depth -1, obj_pulo_particula); //criando a particula do pulo
+		efeito_squash(.4, 1.6); //esticando e achatando
 	}
 }
 
@@ -127,7 +158,38 @@ estado_pulo = function() //pulando
 	
 	if (chao) 
 	{
+		cria_particulas(x, y, depth -1, obj_pouso_particula); //criando particula do posuso
 		estado = estado_parado; //se está no chão, o estado base é o parado
+		efeito_squash(1.5, .5); //esticando e achatando
+	}
+}
+
+estado_tinta_entrar = function()
+{
+	swap_sprite(spr_player_tinta_entrar);
+	
+	if (animacao_acabou())
+	{
+		estado = estado_tinta_loop;
+	}
+}
+
+estado_tinta_loop = function()
+{
+	swap_sprite(spr_player_tinta_loop);
+	
+	if (power_tinta)
+	{
+		estado = estado_tinta_sair;
+	}
+}
+
+estado_tinta_sair = function()
+{
+	swap_sprite(spr_player_tinta_sair);
+	if (animacao_acabou())
+	{
+		estado = estado_parado;
 	}
 }
 
@@ -212,4 +274,4 @@ enabler_debug = function()
 #endregion
 
 //final do script
-estado = estado_power_up_inicio; //passando para a variável de estado, os estados do player
+estado = estado_parado; //passando para a variável de estado, os estados do player

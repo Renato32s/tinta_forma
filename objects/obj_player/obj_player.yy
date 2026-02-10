@@ -10,8 +10,8 @@
   "name":"obj_player",
   "overriddenProperties":[],
   "parent":{
-    "name":"p_obj_player",
-    "path":"folders/Objects/p_obj_player.yy",
+    "name":"pasta player",
+    "path":"folders/Objects/pasta player.yy",
   },
   "parentObjectId":null,
   "persistent":false,
@@ -35,6 +35,9 @@
     "name":"spr_player_idle",
     "path":"sprites/spr_player_idle/spr_player_idle.yy",
   },
-  "spriteMaskId":null,
+  "spriteMaskId":{
+    "name":"spr_player_idle",
+    "path":"sprites/spr_player_idle/spr_player_idle.yy",
+  },
   "visible":true,
 }

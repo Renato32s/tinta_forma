@@ -14,7 +14,13 @@ global.debug = false; //variável de debug
 
 #endregion
 
-
 #region funções
+
+function cria_particulas(_position_x, _position_y, _depth, _particula)
+{
+	//if (!instance_exists(_particula)) return; //se a instancia não exite, não faz nada
+	
+	instance_create_depth(_position_x, _position_y, _depth, _particula); //criando a particula
+}
 
 #endregion

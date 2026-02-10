@@ -25,8 +25,8 @@
   "nineSlice":null,
   "origin":0,
   "parent":{
-    "name":"p_spr_level",
-    "path":"folders/Sprites/p_spr_level.yy",
+    "name":"pasta level",
+    "path":"folders/Sprites/pasta level.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

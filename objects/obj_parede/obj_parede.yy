@@ -6,8 +6,8 @@
   "name":"obj_parede",
   "overriddenProperties":[],
   "parent":{
-    "name":"p_obj_level",
-    "path":"folders/Objects/p_obj_level.yy",
+    "name":"pasta level",
+    "path":"folders/Objects/pasta level.yy",
   },
   "parentObjectId":null,
   "persistent":false,
