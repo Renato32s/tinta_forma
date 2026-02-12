@@ -120,7 +120,11 @@ estado_parado = function() //está parado
 	
 	swap_sprite(spr_player_idle); //definindo a sprite
 	
-	if (power_tinta) estado = estado_tinta_entrar; //entrando no modo tinta
+	if (power_tinta)
+	{
+		cria_particulas(x, y, depth -1, obj_tinta_entrar_particula); //criando particula
+		estado = estado_tinta_entrar; //entrando no modo tinta
+	}
 	
 	if (right != left) estado = estado_movendo; //se movendo, para esquerda ou direita
 	if (jump) 
@@ -177,9 +181,11 @@ estado_tinta_entrar = function()
 estado_tinta_loop = function()
 {
 	swap_sprite(spr_player_tinta_loop);
+	aplica_velocidade();
 	
 	if (power_tinta)
 	{
+		cria_particulas(x, y, depth -1, obj_tinta_sair_particula); //criando particula
 		estado = estado_tinta_sair;
 	}
 }
