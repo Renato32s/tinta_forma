@@ -13,6 +13,10 @@ grav		= 0.2;
 //variável do chão
 chao	= false;
 
+//variável de colisão
+var _tilemap = layer_tilemap_get_id("tl_chao"); //pegando o ID da layer do tilemap
+colisao = [obj_parede, _tilemap];
+
 //variável de controle da direção que o player está olhando
 direction_flip = 1;
 
@@ -65,8 +69,8 @@ aplica_velocidade = function()
 //metodo de movimentação
 movimento = function()
 {	
-	move_and_collide(vel_h, vel_v, obj_parede, 4); //usando move and collide horizontal
-	move_and_collide(0, vel_v, obj_parede, 12); //usando move and collide vertical
+	move_and_collide(vel_h, vel_v, colisao, 4); //usando move and collide horizontal
+	move_and_collide(0, vel_v, colisao, 12); //usando move and collide vertical
 	
 	//enabler_debug(); //chamando o metodo de ativar ou desativar o debug
 	//checa_chao(); //chamando o metodo que checa se está no chão
@@ -77,7 +81,7 @@ movimento = function()
 //metodo para checar se está no chão
 checa_chao = function()
 {
-	chao = place_meeting(x, y + 1, obj_parede); //checando se está no chão
+	chao = place_meeting(x, y + 1, colisao); //checando se está no chão
 }
 
 //metodo para trocar de sprite
@@ -150,7 +154,13 @@ estado_movendo = function() //se movendo
 	{
 		estado = estado_pulo;
 		cria_particulas(x, y, depth -1, obj_pulo_particula); //criando a particula do pulo
-		efeito_squash(.4, 1.6); //esticando e achatando
+		//efeito_squash(.4, 1.6); //esticando e achatando
+	}
+	
+	if (power_tinta)
+	{
+		cria_particulas(x, y, depth -1, obj_tinta_entrar_particula); //criando particula
+		estado = estado_tinta_entrar;
 	}
 }
 
@@ -164,12 +174,13 @@ estado_pulo = function() //pulando
 	{
 		cria_particulas(x, y, depth -1, obj_pouso_particula); //criando particula do posuso
 		estado = estado_parado; //se está no chão, o estado base é o parado
-		efeito_squash(1.5, .5); //esticando e achatando
+		efeito_squash(1.6, .1); //esticando e achatando
 	}
 }
 
 estado_tinta_entrar = function()
 {
+	vel_h = 0;
 	swap_sprite(spr_player_tinta_entrar);
 	
 	if (animacao_acabou())
@@ -183,6 +194,12 @@ estado_tinta_loop = function()
 	swap_sprite(spr_player_tinta_loop);
 	aplica_velocidade();
 	
+	var _barreira = !place_meeting(x + (vel_h * 18), y + 1, colisao); //impede o player de cair das plataformas quando o modo tinta está ativo
+	if (_barreira)
+	{
+		vel_h = 0;
+	}
+	
 	if (power_tinta)
 	{
 		cria_particulas(x, y, depth -1, obj_tinta_sair_particula); //criando particula
@@ -192,6 +209,7 @@ estado_tinta_loop = function()
 
 estado_tinta_sair = function()
 {
+	vel_h = 0;
 	swap_sprite(spr_player_tinta_sair);
 	if (animacao_acabou())
 	{
