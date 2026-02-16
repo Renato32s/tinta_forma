@@ -64,6 +64,8 @@ aplica_velocidade = function()
 		}
 	}
 	
+	vel_v = clamp(vel_v, -max_vel_v, max_vel_v); //limitando a velocidade vertical(eixo_y)
+	
 }
 
 //metodo de movimentação
@@ -157,6 +159,11 @@ estado_movendo = function() //se movendo
 		//efeito_squash(.4, 1.6); //esticando e achatando
 	}
 	
+	if (!chao)
+	{
+		estado = estado_pulo;
+	}
+	
 	if (power_tinta)
 	{
 		cria_particulas(x, y, depth -1, obj_tinta_entrar_particula); //criando particula
@@ -167,14 +174,25 @@ estado_movendo = function() //se movendo
 estado_pulo = function() //pulando
 {
 	aplica_velocidade();
-	if (vel_v < 0) swap_sprite(spr_player_pulo_cima); //definindo a sprite
-	else if (vel_v > 0) swap_sprite(spr_player_pulo_baixo); //caindo
+	if (vel_v < 0) 
+	{
+		swap_sprite(spr_player_pulo_cima); //definindo a sprite
+		colisao[2] = noone; //colisão 2 sai da lista
+	}
+	else
+	{
+		swap_sprite(spr_player_pulo_baixo); //caindo
+		if (!place_meeting(x, y, obj_parede_onde_way)) //se não está tocando na colisão
+		{
+			colisao[2] = obj_parede_onde_way; //parede one way entra na lista
+		}
+	}
 	
 	if (chao) 
 	{
 		cria_particulas(x, y, depth -1, obj_pouso_particula); //criando particula do posuso
 		estado = estado_parado; //se está no chão, o estado base é o parado
-		efeito_squash(1.6, .1); //esticando e achatando
+		efeito_squash(1.2, .8); //esticando e achatando
 	}
 }
 
@@ -194,8 +212,8 @@ estado_tinta_loop = function()
 	swap_sprite(spr_player_tinta_loop);
 	aplica_velocidade();
 	
-	var _barreira = !place_meeting(x + (vel_h * 18), y + 1, colisao); //impede o player de cair das plataformas quando o modo tinta está ativo
-	if (_barreira)
+	var _stop = !place_meeting(x + (vel_h * 18), y + 1, colisao); //impede o player de cair das plataformas quando o modo tinta está ativo
+	if (_stop)
 	{
 		vel_h = 0;
 	}

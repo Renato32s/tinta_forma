@@ -30,7 +30,7 @@
   ],
   "name":"spr_player_tinta_loop",
   "nineSlice":null,
-  "origin":7,
+  "origin":9,
   "parent":{
     "name":"pasta player",
     "path":"folders/Sprites/pasta player.yy",
@@ -103,7 +103,7 @@
     ],
     "visibleRange":null,
     "volume":1.0,
-    "xorigin":11,
+    "xorigin":12,
     "yorigin":7,
   },
   "swatchColours":null,
