@@ -39,6 +39,7 @@ inputs = function()
 	left		= keyboard_check(ord("A")); //pegando o input da esquerda
 	right		= keyboard_check(ord("D")); //pegando o input da direita
 	jump		= keyboard_check_pressed(vk_space); //pegando o input do pulo
+	reset		= keyboard_check_pressed(ord("R")); //pegando o input para resetar o game
 	power_tinta	= keyboard_check_pressed(vk_shift); //pegando o input do poder da tinta
 }
 
@@ -66,6 +67,7 @@ aplica_velocidade = function()
 	
 	vel_v = clamp(vel_v, -max_vel_v, max_vel_v); //limitando a velocidade vertical(eixo_y)
 	
+	if (reset) game_restart(); //resetando o game
 }
 
 //metodo de movimentação
@@ -111,6 +113,12 @@ animacao_acabou = function()
 ajusta_escala = function()
 {
 	if (vel_h != 0) direction_flip = sign(vel_h); //se o vel_h for diferente de zero, a escala é definida com base no vel_h
+}
+
+//metodo para pegar o power up
+pega_power_up = function()
+{
+	estado = estado_power_up_inicio; //definindo o estado para pegar o power up
 }
 
 #endregion fim da região
@@ -177,14 +185,22 @@ estado_pulo = function() //pulando
 	if (vel_v < 0) 
 	{
 		swap_sprite(spr_player_pulo_cima); //definindo a sprite
-		colisao[2] = noone; //colisão 2 sai da lista
+		if (array_contains(colisao, obj_parede_onde_way)) //se a instancia existe no array
+		{
+			var _index = array_get_index(colisao, obj_parede_onde_way); //pegando a posição do objeto dentro do array
+			array_delete(colisao, _index, 01); //deletando a instancia do array
+		}
 	}
 	else
 	{
 		swap_sprite(spr_player_pulo_baixo); //caindo
 		if (!place_meeting(x, y, obj_parede_onde_way)) //se não está tocando na colisão
 		{
-			colisao[2] = obj_parede_onde_way; //parede one way entra na lista
+			if (!array_contains(colisao, obj_parede_onde_way)) //se a instancia não existe
+			{
+				array_push(colisao, obj_parede_onde_way); //adiciona parede one way na lista
+			}
+			//colisao[2] = obj_parede_onde_way; //parede one way entra na lista
 		}
 	}
 	
@@ -237,6 +253,7 @@ estado_tinta_sair = function()
 
 estado_power_up_inicio = function() //power_up inicio
 {
+	vel_h = 0; //parando de se mover 
 	swap_sprite(spr_player_power_up_inicio); //definindo a sprite
 	
 	if (animacao_acabou()) //se acabou a animação
@@ -248,10 +265,10 @@ estado_power_up_inicio = function() //power_up inicio
 estado_power_up_meio = function() //power_up meio
 {
 	swap_sprite(spr_player_power_up_meio); //definindo a sprite
-	
-	if (animacao_acabou())
+	var _instance = !instance_exists(obj_part_power_up);
+	if (_instance and animacao_acabou()) //se não existe particula e a animação acabou
 	{
-		estado = estado_power_up_final;
+		estado = estado_power_up_final; //muda o estado
 	}
 }
 

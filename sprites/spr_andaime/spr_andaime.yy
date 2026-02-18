@@ -24,12 +24,12 @@
   "name":"spr_andaime",
   "nineSlice":{
     "$GMNineSliceData":"",
-    "bottom":13,
+    "bottom":0,
     "enabled":true,
     "guideColour":[4294902015,4294902015,4294902015,4294902015,],
     "highlightColour":1728023040,
     "highlightStyle":0,
-    "left":4,
+    "left":3,
     "resourceType":"GMNineSliceData",
     "resourceVersion":"2.0",
     "right":4,
@@ -40,7 +40,7 @@
       1,
       1,
     ],
-    "top":4,
+    "top":3,
   },
   "origin":7,
   "parent":{

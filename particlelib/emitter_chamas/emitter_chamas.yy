@@ -22,8 +22,8 @@
   "gravityDirection":270.0,
   "gravityForce":0.0,
   "headPosition":0.0,
-  "lifetimeMax":120.0,
-  "lifetimeMin":60.0,
+  "lifetimeMax":60.0,
+  "lifetimeMin":30.0,
   "linkedEmitter":null,
   "locked":false,
   "midColour":4279140556,
@@ -65,6 +65,6 @@
   "spriteId":null,
   "spriteRandom":false,
   "spriteStretch":true,
-  "startColour":4280148223,
+  "startColour":4288279039,
   "texture":1,
 }
