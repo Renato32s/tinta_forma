@@ -1,6 +1,7 @@
 #region variáveis
 
 global.debug = false; //variável de debug
+global.power_unlocked = false; //variável de controle do power paint
 
 #endregion
 

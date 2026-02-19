@@ -134,7 +134,7 @@ estado_parado = function() //está parado
 	
 	swap_sprite(spr_player_idle); //definindo a sprite
 	
-	if (power_tinta)
+	if (power_tinta and global.power_unlocked)
 	{
 		cria_particulas(x, y, depth -1, obj_tinta_entrar_particula); //criando particula
 		estado = estado_tinta_entrar; //entrando no modo tinta
@@ -145,7 +145,10 @@ estado_parado = function() //está parado
 	{
 		estado = estado_pulo; //pulando
 		cria_particulas(x, y, depth -1, obj_pulo_particula); //criando a particula do pulo
-		efeito_squash(.4, 1.6); //esticando e achatando
+		var _x = random_range(-.3, -.6);
+		var _y = random_range(.3, .6);
+		efeito_squash(1 + _x, 1 + _y);
+		//efeito_squash(.4, 1.6); //esticando e achatando
 	}
 	if (!chao) estado = estado_pulo; //se não está no chão, está caindo
 }
@@ -164,6 +167,9 @@ estado_movendo = function() //se movendo
 	{
 		estado = estado_pulo;
 		cria_particulas(x, y, depth -1, obj_pulo_particula); //criando a particula do pulo
+		var _x = random_range(-.3, -.6);
+		var _y = random_range(.3, .6);
+		efeito_squash(1 + _x, 1 + _y);
 		//efeito_squash(.4, 1.6); //esticando e achatando
 	}
 	
@@ -172,7 +178,7 @@ estado_movendo = function() //se movendo
 		estado = estado_pulo;
 	}
 	
-	if (power_tinta)
+	if (power_tinta and global.power_unlocked)
 	{
 		cria_particulas(x, y, depth -1, obj_tinta_entrar_particula); //criando particula
 		estado = estado_tinta_entrar;
@@ -208,7 +214,10 @@ estado_pulo = function() //pulando
 	{
 		cria_particulas(x, y, depth -1, obj_pouso_particula); //criando particula do posuso
 		estado = estado_parado; //se está no chão, o estado base é o parado
-		efeito_squash(1.2, .8); //esticando e achatando
+		var _x = random_range(.1, .4);
+		var _y = random_range(-.2, -.4);
+		efeito_squash(1 + _x, 1 + _y);
+		//efeito_squash(1.2, .8); //esticando e achatando
 	}
 }
 

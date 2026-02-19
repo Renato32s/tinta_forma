@@ -7,4 +7,5 @@ if (!target)
 	target = other.id; //definindo o alvo
 	movement(); //se movendo para cima do player
 	explosion(); //criando a particula
+	global.power_unlocked = true; //pode usar o poder da tinta
 }
