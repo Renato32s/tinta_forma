@@ -11,7 +11,9 @@ max_vel_v	= 3;
 grav		= 0.2;
 
 //variável do chão
-chao	= false;
+chao		= false;
+chao_tinta	= false;
+tile_map_tinta = layer_tilemap_get_id("tl_tinta");
 
 //variável de colisão
 var _tilemap = layer_tilemap_get_id("tl_chao"); //pegando o ID da layer do tilemap
@@ -86,6 +88,7 @@ movimento = function()
 checa_chao = function()
 {
 	chao = place_meeting(x, y + 1, colisao); //checando se está no chão
+	chao_tinta = place_meeting(x, y + 1, tile_map_tinta); //checando se está no chao de tinta
 }
 
 //metodo para trocar de sprite
@@ -134,7 +137,7 @@ estado_parado = function() //está parado
 	
 	swap_sprite(spr_player_idle); //definindo a sprite
 	
-	if (power_tinta and global.power_unlocked)
+	if (power_tinta and (global.power_unlocked and chao_tinta))
 	{
 		cria_particulas(x, y, depth -1, obj_tinta_entrar_particula); //criando particula
 		estado = estado_tinta_entrar; //entrando no modo tinta
@@ -178,7 +181,7 @@ estado_movendo = function() //se movendo
 		estado = estado_pulo;
 	}
 	
-	if (power_tinta and global.power_unlocked)
+	if (power_tinta and (global.power_unlocked and chao_tinta))
 	{
 		cria_particulas(x, y, depth -1, obj_tinta_entrar_particula); //criando particula
 		estado = estado_tinta_entrar;
@@ -237,7 +240,7 @@ estado_tinta_loop = function()
 	swap_sprite(spr_player_tinta_loop);
 	aplica_velocidade();
 	
-	var _stop = !place_meeting(x + (vel_h * 18), y + 1, colisao); //impede o player de cair das plataformas quando o modo tinta está ativo
+	var _stop = !place_meeting(x + (vel_h * 18), y + 1, tile_map_tinta); //impede o player de cair das plataformas quando o modo tinta está ativo
 	if (_stop)
 	{
 		vel_h = 0;
